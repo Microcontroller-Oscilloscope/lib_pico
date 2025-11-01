@@ -19,14 +19,18 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "pico1w/board_pico1w_pins.h"
+/****************************
+ * NVM Config
+****************************/
 
-#ifndef EXTERNAL_LED_PIN
-	#define EXTERNAL_STATUS_LED_PIN D22 // pin for external status LED
+#ifndef NVM_SIZE
+	#define NVM_SIZE 0 // size in bytes of NVM
 #endif
 
-#ifndef STATUS_LED_PIN
-	#define STATUS_LED_PIN CYW43_WL_GPIO_LED_PIN // pin for status LED
-#endif
+/****************************
+ * Test Timer Config
+****************************/
+
+#define TEST_FAST_FREQ 300000 // target frequency
 
 #endif

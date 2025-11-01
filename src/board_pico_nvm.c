@@ -16,7 +16,7 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <board_common.h>
+#include <osc_common.h>
 #include <nvm/nvm.h>
 #include <comm/hard_serial/hard_serial.h>
 

@@ -1,5 +1,5 @@
 /*
-	board_uno_io.c - IO configuration for Raspberry Pi Pico W
+	board_pico_io.c - IO configuration for Raspberry Pi Pico
 	Copyright (C) 2025 Camren Chraplak
 
 	This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,16 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <board_common.h>
+#include <osc_common.h>
 #include <board.h>
+#include <pins/board_pico_pins.h>
 
 #include <stdio.h>
 #include <pico/stdlib.h>
-#include <pico/cyw43_arch.h>
+
+#if SUPPORTED_PICO_W
+	#include <pico/cyw43_arch.h>
+#endif
 
 bool initBoard() {
 
@@ -55,10 +59,14 @@ void hardPinMode(pin_t pin, enum pinModeState mode) {
 
 void hardDigitalWrite(pin_t pin, enum digitalState value) {
 
-	if (pin == STATUS_LED_PIN) {
-		cyw43_arch_gpio_put(pin, value);
-	}
-	else {
+	#if SUPPORTED_PICO_W
+		if (pin == STATUS_LED_PIN) {
+			cyw43_arch_gpio_put(pin, value);
+		}
+		else {
+			gpio_put(pin, value);
+		}
+	#else
 		gpio_put(pin, value);
-	}
+	#endif
 }

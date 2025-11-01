@@ -1,5 +1,5 @@
 /*
-	board_pico1w_pins.h - pin configuration for Raspberry Pi Pico W
+	board_pico_pins.h - pin configuration for all Raspberry Pi Pico
 	Copyright (C) 2025 Camren Chraplak
 
 	This program is free software: you can redistribute it and/or modify
@@ -194,4 +194,10 @@
 #endif
 #ifndef LED_COUNT
 	#define LED_COUNT 1
+#endif
+#ifndef EXTERNAL_LED_PIN
+	#define EXTERNAL_STATUS_LED_PIN D22 // pin for external status LED
+#endif
+#ifndef STATUS_LED_PIN
+	#define STATUS_LED_PIN CYW43_WL_GPIO_LED_PIN // pin for status LED
 #endif

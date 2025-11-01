@@ -1,5 +1,5 @@
 /*
-	board_pico_threads.h - thread configuration for all Raspberry Pi Picos
+	board_pico_delay.c - delay configuration for Raspberry Pi Pico
 	Copyright (C) 2025 Camren Chraplak
 
 	This program is free software: you can redistribute it and/or modify
@@ -16,31 +16,14 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <hardware/sync.h>
-#include <pico/multicore.h>
+#include <osc_common.h>
 
-#include <board_common.h>
+#include <pico/stdlib.h>
 
-bool locked = false;
-uint32_t intrruptStatus;
-
-bool startThreadSafety(void) {
-
-	if (!locked) {
-		intrruptStatus = save_and_disable_interrupts();
-		//multicore_lockout_start_blocking();
-		locked = true;
-		return true;
-	}
-	return false;
+void hardDelayMS(uint32_t delayAmount) {
+	sleep_ms(delayAmount);
 }
 
-bool endThreadSafety(void) {
-	if (locked) {
-		//multicore_lockout_end_blocking();
-		restore_interrupts(intrruptStatus);
-		locked = false;
-		return true;
-	}
-	return false;
+void hardDelayUS(uint32_t delayAmount) {
+	sleep_us(delayAmount);
 }

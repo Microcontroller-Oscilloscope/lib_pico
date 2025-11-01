@@ -1,5 +1,5 @@
 /*
-	board_pico1.h - configuration flags for Raspberry Pi Pico
+	board_pico_threads.h - thread configuration for all Raspberry Pi Picos
 	Copyright (C) 2025 Camren Chraplak
 
 	This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,31 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef BOARD_PICO1_H
-#define BOARD_PICO1_H
+#include <hardware/sync.h>
+#include <pico/multicore.h>
 
-#include "../board_generic.h"
+#include <osc_common.h>
 
-#ifdef ARDUINO_RASPBERRY_PI_PICO
-	#define PICO1
-	#define PICO
-	#define BOARD_FOUND
-#endif
+bool locked = false;
+uint32_t intrruptStatus;
 
-#ifdef PICO1
+bool startThreadSafety(void) {
 
-	#include "../inherited/pico/board_pico.h"
+	if (!locked) {
+		intrruptStatus = save_and_disable_interrupts();
+		//multicore_lockout_start_blocking();
+		locked = true;
+		return true;
+	}
+	return false;
+}
 
-#endif
-#endif
+bool endThreadSafety(void) {
+	if (locked) {
+		//multicore_lockout_end_blocking();
+		restore_interrupts(intrruptStatus);
+		locked = false;
+		return true;
+	}
+	return false;
+}
