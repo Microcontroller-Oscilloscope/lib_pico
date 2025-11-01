@@ -16,8 +16,13 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+/**
+ * timerTicks: time in ms or us
+ * scalar: SCALAR_MS (millis) or SCALAR_US (micros)
+ */
+
 #include <pico/time.h>
-#include <hard_timer.h>
+#include <osc_common/common_timer.h>
 
 #define THOUSAND 1000
 

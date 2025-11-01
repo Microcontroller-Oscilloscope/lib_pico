@@ -16,10 +16,10 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <osc_common/common_thread.h>
+
 #include <hardware/sync.h>
 #include <pico/multicore.h>
-
-#include <osc_common.h>
 
 bool locked = false;
 uint32_t intrruptStatus;
