@@ -17,8 +17,8 @@
 */
 
 #include <osc_common/common_io.h>
-#include <board.h>
-#include <pins/board_pico_pins.h>
+#include <status/status.h>
+#include <pins/pins.h>
 
 #include <stdio.h>
 #include <pico/stdlib.h>
@@ -57,7 +57,7 @@ void hardPinMode(pin_t pin, enum pinModeState mode) {
 	}
 }
 
-void hardDigitalWrite(pin_t pin, enum digitalState value) {
+void hardDigitalWrite(pin_t pin, uint8_t value) {
 
 	#if SUPPORTED_PICO_W
 		if (pin == STATUS_LED_PIN) {
@@ -69,4 +69,17 @@ void hardDigitalWrite(pin_t pin, enum digitalState value) {
 	#else
 		gpio_put(pin, value);
 	#endif
+}
+
+bool getStatusPin(pin_t *pin, enum statusPin status) {
+	if (status == STATUS_PIN_EXTERNAL) {
+		*pin = EXTERNAL_STATUS_LED_PIN;
+		return false;
+	}
+	else if (status == STATUS_PIN_INTERNAL) {
+		*pin = STATUS_LED_PIN;
+		return false;
+	}
+	*pin = PIN_T_INVALID;
+	return false;
 }

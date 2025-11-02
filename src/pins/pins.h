@@ -1,5 +1,5 @@
 /*
-	board.h - configuration flags for Raspberry Pi Pico
+	pins.h - pin configuration for Raspberry Pi Pico
 	Copyright (C) 2025 Camren Chraplak
 
 	This program is free software: you can redistribute it and/or modify
@@ -16,21 +16,13 @@
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef PINS_H
+#define PINS_H
 
-/****************************
- * NVM Config
-****************************/
+#include <boards/board_common.h>
 
-#ifndef NVM_SIZE
-	#define NVM_SIZE 4096 // size in bytes of NVM
+#if SUPPORTED_PICO
+	#include "board_pico_pins.h"
 #endif
-
-/****************************
- * Test Timer Config
-****************************/
-
-#define TEST_FAST_FREQ 300000 // target frequency
 
 #endif
