@@ -25,4 +25,22 @@
 	#include "board_pico_pins.h"
 #endif
 
+// LED
+#ifndef INTERNAL_LED
+	#define INTERNAL_LED LED_BUILTIN
+#endif
+#ifndef LED_COUNT
+	#define LED_COUNT 1
+#endif
+#ifndef EXTERNAL_LED_PIN
+	#define EXTERNAL_STATUS_LED_PIN D22 // pin for external status LED
+#endif
+#ifndef STATUS_LED_PIN
+	#if SUPPORTED_PICO_W
+		#define STATUS_LED_PIN CYW43_WL_GPIO_LED_PIN // pin for status LED
+	#elif SUPPORTED_PICO_NO_W
+		#define STATUS_LED_PIN 25 // pin for status LED
+	#endif
+#endif
+
 #endif

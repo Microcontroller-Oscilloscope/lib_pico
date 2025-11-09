@@ -24,10 +24,6 @@
 #include <hardware/sync.h>
 #include <pico/multicore.h>
 
-#ifndef NVM_SIZE
-	#define NVM_SIZE FLASH_NVM_SIZE // size in bytes of NVM
-#endif
-
 bool nvmBegan = false;
 bool chainLock = false; // prevents multiple erease/write of flash
 
@@ -49,7 +45,7 @@ enum NVMStartCode nvmInit(nvm_size_t setNVMSize) {
 		return NVM_INVALID_SIZE;
 	}
 
-	if (setNVMSize > SECTOR_SIZE) {
+	if (setNVMSize > nvmMaxSize()) {
 		return NVM_INVALID_SIZE;
 	}
 
@@ -66,14 +62,8 @@ enum NVMStartCode nvmInit(nvm_size_t setNVMSize) {
 	return NVM_OK;
 }
 
-bool nvmMaxSize(nvm_size_t *size) {
-	if (nvmBegan) {
-		*size = SECTOR_SIZE;
-		return true;
-	}
-
-	*size = DEFAULT_NVM_SIZE;
-	return false;
+nvm_size_t nvmMaxSize(void) {
+	return SECTOR_SIZE;
 }
 
 void nvmCommit() {
@@ -93,21 +83,15 @@ void nvmCommit() {
 }
 
 enum NVMDefaultCode nvmSetDefaults(void) {
-	nvm_size_t nvmMaxValue;
-	if (nvmMaxSize(&nvmMaxValue)) {
-		if (NVM_SIZE > nvmMaxValue) {
-			return NVM_DEFAULT_SIZE_TOO_BIG;
-		}
-	}
-	else {
-		// if nvm not started or unable to get size
-		return NVM_DEFAULT_FAIL_MAX_SIZE;
+
+	if (!nvmBegan) {
+		return NVM_DEFAULT_NOT_STARTED;
 	}
 
 	chainLock = true;
 
 	// writes critical values
-	enum NVMDefaultCode code = nvmSetCritDefaults(nvmMaxValue);
+	enum NVMDefaultCode code = nvmSetCritDefaults(nvmMaxSize());
 	if (code != NVM_DEFAULT_OK) {
 		chainLock = false;
 		return code;

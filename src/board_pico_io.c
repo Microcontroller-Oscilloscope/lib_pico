@@ -19,6 +19,7 @@
 #include <osc_common/common_io.h>
 #include <status/status.h>
 #include <pins/pins.h>
+#include <compile_flags/compile_flags.h>
 
 #include <stdio.h>
 #include <pico/stdlib.h>
