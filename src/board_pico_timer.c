@@ -135,6 +135,8 @@ bool hardTimerClaimed(hard_timer_t timer) {
 	return !!(timersClaimed & (((storage_t)1) << (timer)));
 }
 
+#define PICO_SDK_TIMER_MAX 1000000
+
 /**
  * Gets hard timer stats for target frequency
  * 
@@ -152,12 +154,12 @@ enum HardTimerStatusReturn getHardTimerStats(freq_t *freq, hard_timer_t *timer, 
 	enum HardTimerStatusReturn status = HARD_TIMER_OK;
 
 	// freq doesn't divide evenly with us
-	if (FREQ_MAX % *freq != 0) {
+	if (PICO_SDK_TIMER_MAX % *freq != 0) {
 		status = HARD_TIMER_SLIGHTLY_OFF;
 	}
 
 	//target in us
-	freq_t targetUS = FREQ_MAX / *freq;
+	freq_t targetUS = PICO_SDK_TIMER_MAX / *freq;
 
 	if (targetUS % THOUSAND == 0 && status == HARD_TIMER_OK) {
 		*scalar = SCALAR_MS;
@@ -169,10 +171,10 @@ enum HardTimerStatusReturn getHardTimerStats(freq_t *freq, hard_timer_t *timer, 
 	}
 
 	if (*scalar == SCALAR_MS) {
-		*freq = FREQ_MAX / (*timerTicks * THOUSAND);
+		*freq = PICO_SDK_TIMER_MAX / (*timerTicks * THOUSAND);
 	}
 	else if (*scalar == SCALAR_US) {
-		*freq = FREQ_MAX / *timerTicks;
+		*freq = PICO_SDK_TIMER_MAX / *timerTicks;
 	}
 
 	if ((!hardTimerClaimed(*timer) && hardTimerStarted(*timer)) || *timer == HARD_TIMER_INVALID) {
@@ -208,12 +210,12 @@ bool cancelHardTimer(hard_timer_t timer) {
 	return false;
 }
 
-bool setHardTimer(hard_timer_t *timer, freq_t *freq, hard_timer_function_ptr_t function, timer_priority_t priority) {
+bool setHardTimer(hard_timer_t *timer, freq_t *freq, hard_timer_function_ptr_t function, void* params, timer_priority_t priority) {
 
 	if (function == NULL || freq == NULL || timer == NULL) {
 		return false;
 	}
-	if (*freq == (freq_t)0 || *freq > FREQ_MAX) {
+	if (*freq == (freq_t)0 || *freq > HARD_TIMER_FREQ_MAX) {
 		return false;
 	}
 
@@ -226,14 +228,17 @@ bool setHardTimer(hard_timer_t *timer, freq_t *freq, hard_timer_function_ptr_t f
 
 	if (!hardTimerStarted(*timer)) {
 		struct repeating_timer* timerPtr = getTimer(*timer);
+
+		setHardTimerFunction(*timer, function, params);
+
 		if (scalar == SCALAR_MS) {
-			if (add_repeating_timer_ms(-timerTicks, function, NULL, timerPtr)) {
+			if (add_repeating_timer_ms(-timerTicks, getHardTimerCallback(*timer), NULL, timerPtr)) {
 				setTimerStarted(*timer, true);
 				return true;
 			}
 		}
 		else if (scalar == SCALAR_US) {
-			if (add_repeating_timer_us(-timerTicks, function, NULL, timerPtr)) {
+			if (add_repeating_timer_us(-timerTicks, getHardTimerCallback(*timer), NULL, timerPtr)) {
 				setTimerStarted(*timer, true);
 				return true;
 			}
